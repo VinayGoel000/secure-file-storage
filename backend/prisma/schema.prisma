@@ -7,4 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Add your models here
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.Text
+  passwordHash String   @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  files        File[]
+}
+
+model File {
+  id           String   @id @default(uuid()) @db.Uuid
+  ownerId      String   @db.Uuid
+  originalName String   @db.Text
+  storageKey   String   @unique @db.Text
+  mimeType     String   @db.Text
+  size         BigInt
+  isPublic     Boolean  @default(false)
+  shareToken   String?  @unique @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([createdAt])
+}
