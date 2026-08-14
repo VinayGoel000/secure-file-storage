@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth';
+import fileRoutes from './routes/files';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/files', fileRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

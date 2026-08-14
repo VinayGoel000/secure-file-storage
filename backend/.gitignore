@@ -27,3 +27,6 @@ prisma/migrations/
 # Coverage
 coverage/
 .nyc_output/
+
+# Temporary uploads
+tmp/
