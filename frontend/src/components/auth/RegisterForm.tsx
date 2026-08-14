@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import FormInput from './FormInput';
 import Button from '@/components/ui/Button';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PasswordRequirement {
   label: string;
@@ -18,6 +20,8 @@ const passwordRequirements: PasswordRequirement[] = [
 ];
 
 export default function RegisterForm() {
+  const router = useRouter();
+  const { register } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -70,12 +74,19 @@ export default function RegisterForm() {
     setIsLoading(true);
     setErrors({});
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Mock success
-    setIsLoading(false);
-    setIsSuccess(true);
+    try {
+      await register(email.trim(), password);
+      setIsLoading(false);
+      setIsSuccess(true);
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setErrors({ general: message });
+      setIsLoading(false);
+    }
   };
 
   if (isSuccess) {
@@ -89,7 +100,7 @@ export default function RegisterForm() {
           </div>
         </div>
         <h2 className="text-lg font-semibold text-gray-900">Account created!</h2>
-        <p className="mt-1 text-sm text-gray-500">Welcome to Vaultly. Redirecting...</p>
+        <p className="mt-1 text-sm text-gray-500">Redirecting to sign in...</p>
       </div>
     );
   }

@@ -1,10 +1,4 @@
-import { FileItem, User, StorageInfo, ShareData } from '@/types';
-
-export const mockUser: User = {
-  id: '1',
-  email: 'alex.morgan@vaultly.io',
-  name: 'Alex Morgan',
-};
+import { FileItem, StorageInfo, ShareData } from '@/types';
 
 export const mockStorage: StorageInfo = {
   used: 2.4 * 1024 * 1024 * 1024,

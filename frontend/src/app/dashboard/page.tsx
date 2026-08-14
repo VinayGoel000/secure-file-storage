@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
 import MobileNavigation from '@/components/layout/MobileNavigation';
@@ -14,9 +17,35 @@ import ConfirmModal from '@/components/ui/ConfirmModal';
 import RenameModal from '@/components/ui/RenameModal';
 import Toast from '@/components/ui/Toast';
 import { mockFiles as initialMockFiles } from '@/lib/mockData';
+import { useState, useMemo, useCallback } from 'react';
 import { FileItem } from '@/types';
 
 export default function DashboardPage() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace('/login');
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <DashboardContent />;
+}
+
+function DashboardContent() {
   const [files, setFiles] = useState<FileItem[]>(initialMockFiles);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');

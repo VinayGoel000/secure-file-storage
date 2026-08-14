@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { mockUser } from '@/lib/mockData';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -10,6 +11,8 @@ interface TopbarProps {
 }
 
 export default function Topbar({ onMenuClick, onSearch, onUploadClick }: TopbarProps) {
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,9 +21,15 @@ export default function Topbar({ onMenuClick, onSearch, onUploadClick }: TopbarP
     onSearch(value);
   };
 
-  const initials = mockUser.name
-    ? mockUser.name.split(' ').map((n) => n[0]).join('').toUpperCase()
-    : mockUser.email[0].toUpperCase();
+  const email = user?.email ?? '';
+  const initials = email
+    ? email.split('@')[0].slice(0, 2).toUpperCase()
+    : '?';
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8">
@@ -89,13 +98,13 @@ export default function Topbar({ onMenuClick, onSearch, onUploadClick }: TopbarP
           </svg>
         </button>
 
-        <UserMenu initials={initials} />
+        <UserMenu initials={initials} email={email} onLogout={handleLogout} />
       </div>
     </header>
   );
 }
 
-function UserMenu({ initials }: { initials: string }) {
+function UserMenu({ initials, email, onLogout }: { initials: string; email: string; onLogout: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -125,8 +134,8 @@ function UserMenu({ initials }: { initials: string }) {
             role="menu"
           >
             <div className="border-b border-gray-100 px-4 py-3">
-              <p className="text-sm font-medium text-gray-900">{mockUser.name}</p>
-              <p className="text-xs text-gray-500">{mockUser.email}</p>
+              <p className="text-sm font-medium text-gray-900">{email}</p>
+              <p className="text-xs text-gray-500">{email}</p>
             </div>
             <button
               className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -140,7 +149,7 @@ function UserMenu({ initials }: { initials: string }) {
             </button>
             <button
               className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-              onClick={() => setIsOpen(false)}
+              onClick={() => { setIsOpen(false); onLogout(); }}
               role="menuitem"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
