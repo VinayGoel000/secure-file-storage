@@ -82,15 +82,15 @@ export default function Sidebar() {
 }
 
 function StorageIndicator() {
-  const used = 2.4;
-  const total = 10;
-  const percentage = (used / total) * 100;
+  const usedGB = 2.4;
+  const totalGB = 10;
+  const percentage = (usedGB / totalGB) * 100;
 
   return (
     <div className="rounded-lg bg-gray-50 p-4">
       <div className="mb-2 flex items-center justify-between text-sm">
         <span className="font-medium text-gray-700">Storage</span>
-        <span className="text-gray-500">{used} GB / {total} GB</span>
+        <span className="text-gray-500">{usedGB} GB / {totalGB} GB</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-gray-200">
         <div

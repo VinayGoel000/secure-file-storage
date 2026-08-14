@@ -10,6 +10,8 @@ interface FileGridProps {
   viewMode: 'grid' | 'list';
   onSelectFile: (id: string) => void;
   onDoubleClickFile: (file: FileItem) => void;
+  onContextMenu: (e: React.MouseEvent, fileId: string) => void;
+  onClickFile?: (file: FileItem) => void;
 }
 
 export default function FileGrid({
@@ -18,6 +20,8 @@ export default function FileGrid({
   viewMode,
   onSelectFile,
   onDoubleClickFile,
+  onContextMenu,
+  onClickFile,
 }: FileGridProps) {
   if (viewMode === 'list') {
     return (
@@ -29,6 +33,8 @@ export default function FileGrid({
             isSelected={selectedFileId === file.id}
             onSelect={onSelectFile}
             onDoubleClick={onDoubleClickFile}
+            onContextMenu={onContextMenu}
+            onClickFile={onClickFile}
           />
         ))}
       </div>
@@ -44,6 +50,8 @@ export default function FileGrid({
           isSelected={selectedFileId === file.id}
           onSelect={onSelectFile}
           onDoubleClick={onDoubleClickFile}
+          onContextMenu={onContextMenu}
+          onClickFile={onClickFile}
         />
       ))}
     </div>

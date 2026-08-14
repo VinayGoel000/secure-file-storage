@@ -1,3 +1,5 @@
+'use client';
+
 import { FileItem } from '@/types';
 import FileTypeIcon, { getFileType } from './FileTypeIcon';
 import FileVisibilityBadge from './FileVisibilityBadge';
@@ -7,9 +9,11 @@ interface FileRowProps {
   isSelected: boolean;
   onSelect: (id: string) => void;
   onDoubleClick: (file: FileItem) => void;
+  onContextMenu: (e: React.MouseEvent, fileId: string) => void;
+  onClickFile?: (file: FileItem) => void;
 }
 
-export default function FileRow({ file, isSelected, onSelect, onDoubleClick }: FileRowProps) {
+export default function FileRow({ file, isSelected, onSelect, onDoubleClick, onContextMenu, onClickFile }: FileRowProps) {
   const fileType = getFileType(file.mimeType, file.type === 'folder');
 
   const formatDate = (dateString: string) => {
@@ -34,10 +38,16 @@ export default function FileRow({ file, isSelected, onSelect, onDoubleClick }: F
           ? 'border-vaultly-500 bg-vaultly-50 shadow-sm'
           : 'border-gray-200 bg-white hover:border-gray-300'
       }`}
-      onClick={() => onSelect(file.id)}
+      onClick={() => {
+        onSelect(file.id);
+        onClickFile?.(file);
+      }}
       onDoubleClick={() => onDoubleClick(file)}
+      onContextMenu={(e) => onContextMenu(e, file.id)}
       role="button"
       tabIndex={0}
+      aria-selected={isSelected}
+      aria-label={`${file.name}, ${file.type}`}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -45,7 +55,7 @@ export default function FileRow({ file, isSelected, onSelect, onDoubleClick }: F
         }
       }}
     >
-      <FileTypeIcon type={fileType} className="h-8 w-8" />
+      <FileTypeIcon type={fileType} className="h-8 w-8 shrink-0" />
 
       <div className="min-w-0 flex-1">
         <h3 className="truncate text-sm font-medium text-gray-900">{file.name}</h3>
@@ -59,7 +69,7 @@ export default function FileRow({ file, isSelected, onSelect, onDoubleClick }: F
       <FileVisibilityBadge isPublic={file.isPublic} />
 
       {isSelected && (
-        <svg className="h-5 w-5 text-vaultly-600" fill="currentColor" viewBox="0 0 24 24">
+        <svg className="h-5 w-5 shrink-0 text-vaultly-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
         </svg>
       )}

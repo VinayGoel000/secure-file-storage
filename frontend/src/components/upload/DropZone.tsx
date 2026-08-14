@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 interface DropZoneProps {
   onFilesSelected: (files: File[]) => void;
@@ -8,20 +8,30 @@ interface DropZoneProps {
 
 export default function DropZone({ onFilesSelected }: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const dragCounterRef = useRef(0);
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounterRef.current++;
+    setIsDragging(true);
+  }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragging(true);
   }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragging(false);
+    dragCounterRef.current--;
+    if (dragCounterRef.current === 0) {
+      setIsDragging(false);
+    }
   }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
+      dragCounterRef.current = 0;
       setIsDragging(false);
 
       const files = Array.from(e.dataTransfer.files);
@@ -48,15 +58,20 @@ export default function DropZone({ onFilesSelected }: DropZoneProps) {
       className={`relative rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
         isDragging
           ? 'border-vaultly-500 bg-vaultly-50'
-          : 'border-gray-300 hover:border-gray-400'
+          : 'border-gray-300 hover:border-vaultly-400'
       }`}
+      onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      role="region"
+      aria-label="File upload area"
     >
       <div className="flex flex-col items-center">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-          <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+        <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-full transition-colors ${
+          isDragging ? 'bg-vaultly-100' : 'bg-gray-100'
+        }`}>
+          <svg className={`h-6 w-6 transition-colors ${isDragging ? 'text-vaultly-500' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
           </svg>
         </div>
@@ -75,7 +90,7 @@ export default function DropZone({ onFilesSelected }: DropZoneProps) {
         multiple
         className="absolute inset-0 cursor-pointer opacity-0"
         onChange={handleFileInput}
-        aria-label="Upload files"
+        aria-label="Select files to upload"
       />
     </div>
   );

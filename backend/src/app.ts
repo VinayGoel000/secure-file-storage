@@ -2,9 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
 import { errorHandler } from './middleware/errorHandler';
+import authRoutes from './routes/auth';
 
 dotenv.config();
 
@@ -27,13 +29,15 @@ if (process.env.NODE_ENV !== 'test') {
 // Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// TODO: Add routes here
+// Routes
+app.use('/api/auth', authRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

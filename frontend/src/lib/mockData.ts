@@ -1,4 +1,4 @@
-import { FileItem, User, StorageInfo } from '@/types';
+import { FileItem, User, StorageInfo, ShareData } from '@/types';
 
 export const mockUser: User = {
   id: '1',
@@ -80,3 +80,13 @@ export const mockFiles: FileItem[] = [
     ownerId: '1',
   },
 ];
+
+export const mockShareData: ShareData = {
+  fileName: 'Q4 Report.pdf',
+  fileType: 'PDF Document',
+  fileSize: 2.8 * 1024 * 1024,
+  mimeType: 'application/pdf',
+  sharedBy: 'Alex Morgan',
+  sharedAt: '2025-01-14T14:20:00Z',
+  isPublic: true,
+};

@@ -1,6 +1,6 @@
 interface UploadProgressProps {
   progress: number;
-  status: 'pending' | 'uploading' | 'paused' | 'completed' | 'error';
+  status: 'pending' | 'uploading' | 'paused' | 'completed' | 'error' | 'validating';
 }
 
 export default function UploadProgress({ progress, status }: UploadProgressProps) {
@@ -10,6 +10,7 @@ export default function UploadProgress({ progress, status }: UploadProgressProps
     paused: 'bg-yellow-500',
     completed: 'bg-green-500',
     error: 'bg-red-500',
+    validating: 'bg-gray-300',
   };
 
   return (

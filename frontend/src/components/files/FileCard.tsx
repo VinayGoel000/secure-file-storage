@@ -9,9 +9,11 @@ interface FileCardProps {
   isSelected: boolean;
   onSelect: (id: string) => void;
   onDoubleClick: (file: FileItem) => void;
+  onContextMenu: (e: React.MouseEvent, fileId: string) => void;
+  onClickFile?: (file: FileItem) => void;
 }
 
-export default function FileCard({ file, isSelected, onSelect, onDoubleClick }: FileCardProps) {
+export default function FileCard({ file, isSelected, onSelect, onDoubleClick, onContextMenu, onClickFile }: FileCardProps) {
   const fileType = getFileType(file.mimeType, file.type === 'folder');
 
   const formatDate = (dateString: string) => {
@@ -36,10 +38,16 @@ export default function FileCard({ file, isSelected, onSelect, onDoubleClick }: 
           ? 'border-vaultly-500 bg-vaultly-50 shadow-md'
           : 'border-gray-200 bg-white hover:border-gray-300'
       }`}
-      onClick={() => onSelect(file.id)}
+      onClick={() => {
+        onSelect(file.id);
+        onClickFile?.(file);
+      }}
       onDoubleClick={() => onDoubleClick(file)}
+      onContextMenu={(e) => onContextMenu(e, file.id)}
       role="button"
       tabIndex={0}
+      aria-selected={isSelected}
+      aria-label={`${file.name}, ${file.type}`}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -60,7 +68,7 @@ export default function FileCard({ file, isSelected, onSelect, onDoubleClick }: 
       </div>
 
       {isSelected && (
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 right-2" aria-hidden="true">
           <svg className="h-5 w-5 text-vaultly-600" fill="currentColor" viewBox="0 0 24 24">
             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
           </svg>
